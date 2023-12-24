@@ -1,0 +1,132 @@
+.main{
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    width: 100%;
+    font-size: 0.9em;
+
+}
+.tabs{
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    font-family: 'Roboto', sans-serif;
+    margin-left: 4%;
+    padding-right: 1em;
+    width: 100%;
+    max-width: 100%;
+}
+.itemTabs::-webkit-scrollbar{
+    background-color: var(--background-secondary);
+    height: 2px;
+    width: 20px;
+    padding-right: 1em;
+}
+
+.itemTabs{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    height: auto;
+    padding: 0.1em 1em;
+    border-radius: 5px 5px 0 0;
+    background-color: var(--background-secondary)   ;
+    color: var(--text-secondary);
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: -2px;
+    margin-right: 0em;
+    font-size: 0.9em;
+    overflow-y: hidden;
+    overflow-x: auto;
+    min-height: 3em;
+}
+.itemTabs p{
+    position: relative;
+    border-bottom: 1px solid var(--background-secondary);
+    display: block;
+    align-items: center;
+    padding: 0.2em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    margin: auto;
+    justify-content: center;    
+    text-align: center;
+    
+}
+
+.itemTabsDisabled p{
+    position: relative;
+    border-bottom: 2px solid var(--secondary-color);
+    display: block;
+    align-items: center;
+    padding: 0.2em;
+    margin: auto;
+    min-height: max-content;
+    justify-content: center;    
+    text-align: center;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    color: var(--text-secondary);
+}
+.itemTabs:hover{
+    background-color: #eaeaeaf1;
+}
+.itemTabsDisabled{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: auto;
+    height: auto;
+    min-height: 3em;
+    padding: 0.1em 1em;
+    min-width: fit-content;
+    border-radius: 5px 5px 0 0;
+    background-color: var(--background-secondary);
+    font-weight: 600;
+    pointer-events: none;
+    margin-bottom: -2px;
+    margin-right: 0em;
+    color: #ffffff;
+    font-size: 0.9em;
+}
+
+.conteiner{
+    display: flex;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    min-width: 100%;
+    max-width: 100%;
+    height: 100%;
+    width: 100%;
+    
+    border-radius: 10px;
+    background-color: var(--background-secondary);
+    
+    box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12);
+}
+
+.disabledContainer{
+    display: none;
+}
+
+.buttontabs{
+    border: none;
+    background-color: #ffffff00;
+    width: max-content;
+    margin-right: 0;
+    margin-left: 0;
+    
+}
+
+.activeTab {
+    text-decoration: underline;
+}
+  

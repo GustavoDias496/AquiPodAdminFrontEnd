@@ -1,42 +1,40 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+:root {
+   --background-primary: #000;
+   --background-secondary: rgb(247, 247, 247);
+   --primary-color: #252323;
+   --secondary-color: #EE5007;
+   --third-color: #5A1BFF;
+   --fourth-color: #F9B909;
+   --button-background: #ffffff;
+   --button-secondary: rgb(247, 247, 247);
+   --button-form: #3737c0;
+   --button-form-hover: #6d6de6;
+   --icon-color: #000000;
+   --text-primary: #fff;
+   --text-secondary: #000;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto';
+    
+ }
+
+body{
+   background-color: var(--background-primary);
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}
+ /*
+#252323
+#EE5007
+#5A1BFF
+#F9B909
+*/
