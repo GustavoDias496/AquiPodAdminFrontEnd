@@ -1,13 +1,16 @@
-import styles from '../../../global/styles/form.module.css';
+import styles from "../../../global/styles/form.module.css";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import api from "../../../services/api";
+import { baseURL } from "../../../services/api";
 import toast, { Toaster } from "react-hot-toast";
 import { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { useParams } from "react-router-dom";
+import { FaCloudDownloadAlt } from "react-icons/fa";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -21,21 +24,24 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
+
 const schema = yup
   .object({
-    finalistName: yup.string().required("O nome é obrigatório!"),
-    categoryId: yup.string().required("A categoria é obrigatória!"),
+    episodeName: yup.string().required("O nome é obrigatório!"),
+    episodeLink: yup.string().required("O link é obrigatório!"),
   })
   .required();
 
 type FormData = yup.InferType<typeof schema>;
 
-type ICategory = {
+type IEpisode = {
   id: number;
   name: string;
+  Link: string;
+  image: string;
 };
 
-export function FinalistForm() {
+export function EpisodeEditForm() {
   const {
     register,
     handleSubmit: onSubmit,
@@ -46,12 +52,16 @@ export function FinalistForm() {
     resolver: yupResolver(schema),
   });
 
-  const successNotify = () => toast("Cadastrado com sucesso!");
-  const errorNotify = () => toast("Erro ao cadastrar!");
+  const successNotify = () => toast("Atualizado com sucesso!");
+  const errorNotify = () => toast("Erro ao atualizado!");
   const [isSubmit, setIsSubmit] = useState(false);
   const [image, setImage] = useState<File | undefined>(undefined);
   const [isImageUploaded, setIsImageUploaded] = useState(false);
-  const [categorys, setCategorys] = useState<ICategory[]>([]);
+  const { id } = useParams<{ id: string }>();
+  const [data, setData] = useState<IEpisode>();
+  console.log(data);
+
+  const episodeId = id ? parseInt(id, 10) : undefined;
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -63,9 +73,15 @@ export function FinalistForm() {
 
   useEffect(() => {
     api
-      .get("/categorys")
+      .get(`episodes/${episodeId}`)
       .then((res) => {
-        setCategorys(res.data);
+        setData(res.data);
+        if (res.data) {
+          reset({
+            episodeName: res.data.name,
+            episodeLink: res.data.link,
+          });
+        }
       })
       .catch((error) => {
         console.log(error);
@@ -74,21 +90,19 @@ export function FinalistForm() {
 
   const handleSubmit = () => {
     setIsSubmit(true);
-    const finalistName = getValues("finalistName");
-    const categoria = getValues("categoryId");
+    const episodeName = getValues("episodeName");
+    const episodeLink = getValues("episodeLink");
 
     api
-      .post(
-        "/finalist",
+      .put(
+        `/episodes/${episodeId}`,
         {
-          name: finalistName,
-          categoryId: parseInt(categoria),
+          name: episodeName,
+          link: episodeLink,
           document: image,
         },
         {
           headers: {
-            Authorization:
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzAyMzQ2Njc3fQ.JVmkjlE70QyFAZ10NgPV586yCtHsJBSDFfEWLBGGsIQ",
             "Content-Type": "multipart/form-data",
           },
         }
@@ -97,7 +111,10 @@ export function FinalistForm() {
         setIsSubmit(true);
         successNotify();
         setIsImageUploaded(false);
-        reset();
+        reset({
+            episodeName: episodeName,
+            episodeLink: episodeLink,
+          });
       })
       .catch((error: any) => {
         errorNotify();
@@ -107,7 +124,6 @@ export function FinalistForm() {
         setIsSubmit(false);
       });
   };
-
   return (
     <form
       onSubmit={onSubmit(handleSubmit)}
@@ -117,32 +133,45 @@ export function FinalistForm() {
       <div className={styles.inputContainer}>
         <label className={styles.label}>Nome:</label>
         <input
-          {...register("finalistName")}
+          {...register("episodeName")}
           type="text"
           className={styles.input}
         />
-        {errors.finalistName && (
-          <p className={styles.inputError}>{errors.finalistName.message}</p>
+        {errors.episodeName && (
+          <p className={styles.inputError}>{errors.episodeName.message}</p>
         )}
       </div>
 
       <div className={styles.inputContainer}>
-        <label className={styles.label}>Categoria:</label>
-        <select className={styles.input} {...register("categoryId")}>
-          <option className={styles.input}>Selecione uma categoria</option>
-          {categorys.map((category) => (
-            <option
-              className={styles.option}
-              key={category.id}
-              value={category.id}
-            >
-              {category.name}
-            </option>
-          ))}
-        </select>
-        {errors.categoryId && (
-          <p className={styles.inputError}>{errors.categoryId.message}</p>
+        <label className={styles.label}>Link do episódio:</label>
+        <input
+          {...register("episodeLink")}
+          type="text"
+          className={styles.input}
+        />
+        {errors.episodeLink && (
+          <p className={styles.inputError}>{errors.episodeLink.message}</p>
         )}
+      </div>
+
+      <div className={styles.inputContainerImage}>
+        {data?.image && (
+          <img
+            src={`${baseURL}/${data.image}`}
+            alt="Descrição da imagem"
+            className={styles.imagePreview}
+            width="50px"
+            height="50px"
+          />
+        )}
+        <a
+          href={`${baseURL}/${data?.image}`}
+          download={data?.image}
+          className={styles.downloadLink}
+          target="_blank"
+        >
+          <FaCloudDownloadAlt color="#000" className={styles.downloadIcon} />
+        </a>
       </div>
 
       <div className={styles.inputContainer}>

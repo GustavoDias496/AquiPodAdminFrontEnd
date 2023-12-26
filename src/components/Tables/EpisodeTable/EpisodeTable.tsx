@@ -43,26 +43,43 @@ export function EpisodeTable(){
         });
     }
 
-    const renderEpisodes = episodes.map((episode, index) =>{
-        return(
-                <tr key={index}>
-                    <th className={styles.th} >{episode.name}</th>
-                    <th className={styles.th} ><Link to={`/edituser/${episode.id}`}><AiFillEdit/></Link></th>
-                    <th className={styles.th} onClick={() => deleteData(episode.id)} ><AiFillDelete color="red" className={styles.deleteIcon}/></th>
-                </tr>
-        )
-    })
-
+    const renderContent = () => {
+        if (episodes.length > 0) {
+          return episodes.map((episode, index) => (
+            <tr key={index}>
+              <th className={styles.th}>{episode.name}</th>
+              <th className={styles.th}>{episode.link}</th>
+              <th className={styles.th}>
+                <Link to={`/editepisode/${episode.id}`}>
+                <AiFillEdit color="blue" />
+                </Link>
+              </th>
+              <th className={styles.th} onClick={() => deleteData(episode.id)}>
+                <AiFillDelete color="red" className={styles.deleteIcon} />
+              </th>
+            </tr>
+          ));
+        }
+        return (
+          <tr>
+            <th className={styles.th}>Você</th>
+            <th className={styles.th}>Não</th>
+            <th className={styles.th}>Tem</th>
+            <th className={styles.th}>Dados</th>
+          </tr>
+        );
+      };
     return(
         <>
             <table className={styles.table}>
                 <thead >
                     <th className={styles.th}>Nome</th>
+                    <th className={styles.th}>Link</th>
                     <th className={styles.th}>Editar</th>
                     <th className={styles.th}>Excluir</th>
                 </thead>
                 <tbody>
-                    {renderEpisodes}
+                    {renderContent()}
                 </tbody>
             </table>
             <Toaster 

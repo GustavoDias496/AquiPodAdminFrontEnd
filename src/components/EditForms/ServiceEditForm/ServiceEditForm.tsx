@@ -1,4 +1,4 @@
-import styles from '../../../global/styles/form.module.css';
+import styles from "../../../global/styles/form.module.css";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -8,7 +8,9 @@ import { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-
+import { useParams } from "react-router-dom";
+import { FaCloudDownloadAlt } from "react-icons/fa";
+import { baseURL } from "../../../services/api";
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
   clipPath: "inset(50%)",
@@ -23,19 +25,21 @@ const VisuallyHiddenInput = styled("input")({
 
 const schema = yup
   .object({
-    finalistName: yup.string().required("O nome é obrigatório!"),
-    categoryId: yup.string().required("A categoria é obrigatória!"),
+    serviceName: yup.string().required("O nome é obrigatório!"),
+    serviceDescription: yup.string().required("A descrição é obrigatória!"),
   })
   .required();
 
 type FormData = yup.InferType<typeof schema>;
 
-type ICategory = {
-  id: number;
-  name: string;
-};
+type IService = {
+    id: number;
+    name: string;
+    description: string;
+    image: string;
+  };
 
-export function FinalistForm() {
+export function ServiceEditForm() {
   const {
     register,
     handleSubmit: onSubmit,
@@ -46,12 +50,15 @@ export function FinalistForm() {
     resolver: yupResolver(schema),
   });
 
-  const successNotify = () => toast("Cadastrado com sucesso!");
-  const errorNotify = () => toast("Erro ao cadastrar!");
+  const successNotify = () => toast("Atualizado com sucesso!");
+  const errorNotify = () => toast("Erro ao atualizar!");
   const [isSubmit, setIsSubmit] = useState(false);
   const [image, setImage] = useState<File | undefined>(undefined);
   const [isImageUploaded, setIsImageUploaded] = useState(false);
-  const [categorys, setCategorys] = useState<ICategory[]>([]);
+  const { id } = useParams<{ id: string }>();
+  const [data, setData] = useState<IService>();
+  console.log(data);
+  const serviceId = id ? parseInt(id, 10) : undefined;
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -63,9 +70,15 @@ export function FinalistForm() {
 
   useEffect(() => {
     api
-      .get("/categorys")
+      .get(`services/${serviceId}`)
       .then((res) => {
-        setCategorys(res.data);
+        setData(res.data);
+        if (res.data) {
+          reset({
+            serviceName: res.data.name,
+            serviceDescription: res.data.description,
+          });
+        }
       })
       .catch((error) => {
         console.log(error);
@@ -74,21 +87,23 @@ export function FinalistForm() {
 
   const handleSubmit = () => {
     setIsSubmit(true);
-    const finalistName = getValues("finalistName");
-    const categoria = getValues("categoryId");
-
+    const serviceName = getValues("serviceName");
+    const serviceDescription = getValues("serviceDescription");
+    console.log({
+      name: serviceName,
+      description: serviceDescription,
+      document: image,
+    });
     api
-      .post(
-        "/finalist",
+      .put(
+        `/services/${serviceId}`,
         {
-          name: finalistName,
-          categoryId: parseInt(categoria),
+          name: serviceName,
+          description: serviceDescription,
           document: image,
         },
         {
           headers: {
-            Authorization:
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzAyMzQ2Njc3fQ.JVmkjlE70QyFAZ10NgPV586yCtHsJBSDFfEWLBGGsIQ",
             "Content-Type": "multipart/form-data",
           },
         }
@@ -97,7 +112,10 @@ export function FinalistForm() {
         setIsSubmit(true);
         successNotify();
         setIsImageUploaded(false);
-        reset();
+        reset({
+            serviceName: serviceName,
+            serviceDescription: serviceDescription,
+          });
       })
       .catch((error: any) => {
         errorNotify();
@@ -117,32 +135,47 @@ export function FinalistForm() {
       <div className={styles.inputContainer}>
         <label className={styles.label}>Nome:</label>
         <input
-          {...register("finalistName")}
+          {...register("serviceName")}
           type="text"
           className={styles.input}
         />
-        {errors.finalistName && (
-          <p className={styles.inputError}>{errors.finalistName.message}</p>
+        {errors.serviceName && (
+          <p className={styles.inputError}>{errors.serviceName.message}</p>
         )}
       </div>
 
       <div className={styles.inputContainer}>
-        <label className={styles.label}>Categoria:</label>
-        <select className={styles.input} {...register("categoryId")}>
-          <option className={styles.input}>Selecione uma categoria</option>
-          {categorys.map((category) => (
-            <option
-              className={styles.option}
-              key={category.id}
-              value={category.id}
-            >
-              {category.name}
-            </option>
-          ))}
-        </select>
-        {errors.categoryId && (
-          <p className={styles.inputError}>{errors.categoryId.message}</p>
+        <label className={styles.label}>Descrição:</label>
+        <input
+          {...register("serviceDescription")}
+          type="text"
+          className={styles.input}
+        />
+        {errors.serviceDescription && (
+          <p className={styles.inputError}>
+            {errors.serviceDescription.message}
+          </p>
         )}
+      </div>
+
+      <div className={styles.inputContainerImage}>
+        {data?.image && (
+          <img
+            src={`${baseURL}/${data.image}`}
+            alt="Descrição da imagem"
+            className={styles.imagePreview}
+            width="50px"
+            height="50px"
+          />
+        )}
+        <a
+          href={`${baseURL}/${data?.image}`}
+          download={data?.image}
+          className={styles.downloadLink}
+          target="_blank"
+        >
+          <FaCloudDownloadAlt color="#000" className={styles.downloadIcon} />
+        </a>
       </div>
 
       <div className={styles.inputContainer}>

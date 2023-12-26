@@ -1,18 +1,14 @@
 import styles from "./styles.module.css";
 import { FaCashRegister, FaHome, FaAddressCard } from "react-icons/fa";
-import { IoEyeSharp } from "react-icons/io5";
+import { IoEyeSharp, IoLogOut } from "react-icons/io5";
 import icon from "../../assets/icon.jpg";
 import { Link } from "react-router-dom";
-import { IoLogOut } from "react-icons/io5";
 
+export function SidebarResult() {
 
-
-export function Sidebar() {
   const handleLogout = () => {
     sessionStorage.removeItem('token');
     localStorage.removeItem('token');
-    sessionStorage.removeItem('auth');
-    localStorage.removeItem('auth');
     
   
 };
@@ -62,4 +58,4 @@ export function Sidebar() {
   );
 }
 
-export default Sidebar;
+export default SidebarResult;

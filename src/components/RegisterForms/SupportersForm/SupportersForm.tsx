@@ -1,13 +1,14 @@
-import styles from '../../../global/styles/form.module.css';
+import styles from "../../../global/styles/form.module.css";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import api from "../../../services/api";
 import toast, { Toaster } from "react-hot-toast";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { styled } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { Editor } from "@tinymce/tinymce-react";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -23,19 +24,13 @@ const VisuallyHiddenInput = styled("input")({
 
 const schema = yup
   .object({
-    finalistName: yup.string().required("O nome é obrigatório!"),
-    categoryId: yup.string().required("A categoria é obrigatória!"),
+    supportersName: yup.string().required("O nome é obrigatório!"),
   })
   .required();
 
 type FormData = yup.InferType<typeof schema>;
 
-type ICategory = {
-  id: number;
-  name: string;
-};
-
-export function FinalistForm() {
+export function SupportersForm() {
   const {
     register,
     handleSubmit: onSubmit,
@@ -51,7 +46,8 @@ export function FinalistForm() {
   const [isSubmit, setIsSubmit] = useState(false);
   const [image, setImage] = useState<File | undefined>(undefined);
   const [isImageUploaded, setIsImageUploaded] = useState(false);
-  const [categorys, setCategorys] = useState<ICategory[]>([]);
+  const [editorContent, setEditorContent] = useState("");
+
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -61,34 +57,21 @@ export function FinalistForm() {
     }
   };
 
-  useEffect(() => {
-    api
-      .get("/categorys")
-      .then((res) => {
-        setCategorys(res.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, []);
-
   const handleSubmit = () => {
     setIsSubmit(true);
-    const finalistName = getValues("finalistName");
-    const categoria = getValues("categoryId");
+    const supportersName = getValues("supportersName");
+    const supportersDescription = editorContent;
 
     api
       .post(
-        "/finalist",
+        "/supporters",
         {
-          name: finalistName,
-          categoryId: parseInt(categoria),
+          name: supportersName,
+          description: supportersDescription,
           document: image,
         },
         {
           headers: {
-            Authorization:
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzAyMzQ2Njc3fQ.JVmkjlE70QyFAZ10NgPV586yCtHsJBSDFfEWLBGGsIQ",
             "Content-Type": "multipart/form-data",
           },
         }
@@ -117,32 +100,41 @@ export function FinalistForm() {
       <div className={styles.inputContainer}>
         <label className={styles.label}>Nome:</label>
         <input
-          {...register("finalistName")}
+          {...register("supportersName")}
           type="text"
           className={styles.input}
         />
-        {errors.finalistName && (
-          <p className={styles.inputError}>{errors.finalistName.message}</p>
+        {errors.supportersName && (
+          <p className={styles.inputError}>{errors.supportersName.message}</p>
         )}
       </div>
 
       <div className={styles.inputContainer}>
-        <label className={styles.label}>Categoria:</label>
-        <select className={styles.input} {...register("categoryId")}>
-          <option className={styles.input}>Selecione uma categoria</option>
-          {categorys.map((category) => (
-            <option
-              className={styles.option}
-              key={category.id}
-              value={category.id}
-            >
-              {category.name}
-            </option>
-          ))}
-        </select>
-        {errors.categoryId && (
-          <p className={styles.inputError}>{errors.categoryId.message}</p>
-        )}
+        <label className={styles.label}>Descrição:</label>
+        <Editor
+          apiKey="epc699ptf3hs9nf9q1hph1m0vdtbr2h7ruq6icz96isofrqp"
+          init={{
+            height: 450,
+            width: 800,
+            plugins:
+              "ai tinycomments mentions anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed permanentpen footnotes advtemplate advtable advcode editimage tableofcontents mergetags powerpaste tinymcespellchecker autocorrect a11ychecker typography inlinecss",
+            toolbar:
+              "undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat",
+            tinycomments_mode: "embedded",
+            tinycomments_author: "Author name",
+            mergetags_list: [
+              { value: "First.Name", title: "First Name" },
+              { value: "Email", title: "Email" },
+            ],
+            ai_request: (_request:any, respondWith:any) =>
+              respondWith.string(() =>
+                Promise.reject("See docs to implement AI Assistant")
+              ),
+          }}
+          initialValue=""
+          value={editorContent}
+          onEditorChange={(content) => setEditorContent(content)} 
+        />
       </div>
 
       <div className={styles.inputContainer}>

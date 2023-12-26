@@ -42,15 +42,30 @@ export function CategoryTable(){
         });
     }
 
-    const renderCategorys = categorys.map((category, index) =>{
-        return(
-                <tr key={index}>
-                    <th className={styles.th} >{category.name}</th>
-                    <th className={styles.th} ><Link to={`/edituser/${category.id}`}><AiFillEdit/></Link></th>
-                    <th className={styles.th} onClick={() => deleteData(category.id)} ><AiFillDelete color="red" className={styles.deleteIcon}/></th>
-                </tr>
-        )
-    })
+    const renderContent = () => {
+        if (categorys.length > 0) {
+          return categorys.map((category, index) => (
+            <tr key={index}>
+              <th className={styles.th}>{category.name}</th>
+              <th className={styles.th}>
+                <Link to={`/editcategory/${category.id}`}>
+                  <AiFillEdit color="blue" />
+                </Link>
+              </th>
+              <th className={styles.th} onClick={() => deleteData(category.id)}>
+                <AiFillDelete color="red" className={styles.deleteIcon} />
+              </th>
+            </tr>
+          ));
+        }
+        return (
+          <tr>
+            <th className={styles.th}>Não</th>
+            <th className={styles.th}>Tem</th>
+            <th className={styles.th}>Dados</th>
+          </tr>
+        );
+      };
 
     return(
         <>
@@ -61,7 +76,7 @@ export function CategoryTable(){
                     <th className={styles.th}>Excluir</th>
                 </thead>
                 <tbody>
-                    {renderCategorys}
+                    {renderContent()}
                 </tbody>
             </table>
             <Toaster 

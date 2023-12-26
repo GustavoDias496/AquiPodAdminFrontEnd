@@ -43,15 +43,32 @@ export function ServiceTable(){
         });
     }
 
-    const renderServices = services.map((service, index) =>{
-        return(
-                <tr key={index}>
-                    <th className={styles.th} >{service.name}</th>
-                    <th className={styles.th} ><Link to={`/edituser/${service.id}`}><AiFillEdit/></Link></th>
-                    <th className={styles.th} onClick={() => deleteData(service.id)} ><AiFillDelete color="red" className={styles.deleteIcon}/></th>
-                </tr>
-        )
-    })
+    const renderContent = () => {
+        if (services.length > 0) {
+          return services.map((service, index) => (
+            <tr key={index}>
+              <th className={styles.th}>{service.name}</th>
+              <th className={styles.th}>{service.description}</th>
+              <th className={styles.th}>
+                <Link to={`/editservice/${service.id}`}>
+                <AiFillEdit color="blue" />
+                </Link>
+              </th>
+              <th className={styles.th} onClick={() => deleteData(service.id)}>
+                <AiFillDelete color="red" className={styles.deleteIcon} />
+              </th>
+            </tr>
+          ));
+        }
+        return (
+          <tr>
+            <th className={styles.th}>Você</th>
+            <th className={styles.th}>Não</th>
+            <th className={styles.th}>Tem</th>
+            <th className={styles.th}>Dados</th>
+          </tr>
+        );
+      };
 
     return(
         <>
@@ -62,7 +79,7 @@ export function ServiceTable(){
                     <th className={styles.th}>Excluir</th>
                 </thead>
                 <tbody>
-                    {renderServices}
+                    {renderContent()}
                 </tbody>
             </table>
             <Toaster 

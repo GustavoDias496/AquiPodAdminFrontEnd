@@ -10,6 +10,8 @@ import { FaDisplay, FaPerson } from "react-icons/fa6";
 import { FinalistTable } from "../../components/Tables/FinalistTable/FinalistTable";
 import { ServiceTable } from "../../components/Tables/ServiceTable/ServiceTable";
 import { MdMiscellaneousServices } from "react-icons/md";
+import { EventTable } from "../../components/Tables/EventTable/EventTable";
+import { SupportersTable } from "../../components/Tables/SupportersTable/SupportersTable";
 
 const itens = [
     {
@@ -35,6 +37,16 @@ const itens = [
     {
       title: "Serviços",
       component: <ServiceTable />,
+      icon: <MdMiscellaneousServices />,
+    },
+    {
+      title: "Eventos",
+      component: <EventTable />,
+      icon: <MdMiscellaneousServices />,
+    },
+    {
+      title: "Apoiadores",
+      component: <SupportersTable />,
       icon: <MdMiscellaneousServices />,
     },
   ];

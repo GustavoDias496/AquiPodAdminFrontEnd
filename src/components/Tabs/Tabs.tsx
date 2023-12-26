@@ -36,6 +36,7 @@ type tabItem = {
   title: string;
   component: JSX.Element;
   icon: JSX.Element;
+  height?: string;
 }
 
 type tabsItens = {
@@ -80,7 +81,7 @@ export default function Tabs({ itens }: tabsItens) {
       ))}
 
       </div>
-      <div key={activeTab} className={styles.conteiner}>
+      <div key={activeTab} className={styles.conteiner} style={{ height: itens[activeTab].height }}>
         {itens[activeTab].component}
       </div>
     </div>

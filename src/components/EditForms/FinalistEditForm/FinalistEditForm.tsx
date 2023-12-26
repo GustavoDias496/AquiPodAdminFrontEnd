@@ -8,7 +8,9 @@ import { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-
+import { useParams } from 'react-router-dom';
+import { FaCloudDownloadAlt } from 'react-icons/fa';
+import { baseURL } from "../../../services/api";
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
   clipPath: "inset(50%)",
@@ -35,7 +37,15 @@ type ICategory = {
   name: string;
 };
 
-export function FinalistForm() {
+type IFinalist = {
+    id: number;
+    name: string;
+    image: string;
+    categoryId: number;
+  };
+  
+
+export function FinalistEditForm() {
   const {
     register,
     handleSubmit: onSubmit,
@@ -46,13 +56,17 @@ export function FinalistForm() {
     resolver: yupResolver(schema),
   });
 
-  const successNotify = () => toast("Cadastrado com sucesso!");
-  const errorNotify = () => toast("Erro ao cadastrar!");
+  const successNotify = () => toast("Atualizado com sucesso!");
+  const errorNotify = () => toast("Erro ao atualizar!");
   const [isSubmit, setIsSubmit] = useState(false);
   const [image, setImage] = useState<File | undefined>(undefined);
   const [isImageUploaded, setIsImageUploaded] = useState(false);
   const [categorys, setCategorys] = useState<ICategory[]>([]);
+  const { id } = useParams<{ id: string }>();
+  const [data, setData] = useState<IFinalist>();
+  console.log(data);
 
+  const finalistId = id ? parseInt(id, 10) : undefined;
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -72,14 +86,31 @@ export function FinalistForm() {
       });
   }, []);
 
+  useEffect(() => {
+    api
+      .get(`finalist/${finalistId}`)
+      .then((res) => {
+        setData(res.data);
+        if (res.data) {
+          reset({
+            finalistName: res.data.name,
+            categoryId: res.data.categoryId,
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
   const handleSubmit = () => {
     setIsSubmit(true);
     const finalistName = getValues("finalistName");
     const categoria = getValues("categoryId");
 
     api
-      .post(
-        "/finalist",
+      .put(
+        `/finalist/${finalistId}`,
         {
           name: finalistName,
           categoryId: parseInt(categoria),
@@ -87,8 +118,6 @@ export function FinalistForm() {
         },
         {
           headers: {
-            Authorization:
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzAyMzQ2Njc3fQ.JVmkjlE70QyFAZ10NgPV586yCtHsJBSDFfEWLBGGsIQ",
             "Content-Type": "multipart/form-data",
           },
         }
@@ -97,7 +126,10 @@ export function FinalistForm() {
         setIsSubmit(true);
         successNotify();
         setIsImageUploaded(false);
-        reset();
+        reset({
+            finalistName: finalistName,
+            categoryId: categoria,
+          });
       })
       .catch((error: any) => {
         errorNotify();
@@ -143,6 +175,26 @@ export function FinalistForm() {
         {errors.categoryId && (
           <p className={styles.inputError}>{errors.categoryId.message}</p>
         )}
+      </div>
+
+      <div className={styles.inputContainerImage}>
+        {data?.image && (
+          <img
+            src={`${baseURL}/${data.image}`}
+            alt="Descrição da imagem"
+            className={styles.imagePreview}
+            width="50px"
+            height="50px"
+          />
+        )}
+        <a
+          href={`${baseURL}/${data?.image}`}
+          download={data?.image}
+          className={styles.downloadLink}
+          target="_blank"
+        >
+          <FaCloudDownloadAlt color="#000" className={styles.downloadIcon} />
+        </a>
       </div>
 
       <div className={styles.inputContainer}>

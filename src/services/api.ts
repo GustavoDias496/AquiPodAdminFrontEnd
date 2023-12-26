@@ -1,12 +1,25 @@
-import axios from "axios"
+import axios from "axios";
 
-let token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzAyMzQ2Njc3fQ.JVmkjlE70QyFAZ10NgPV586yCtHsJBSDFfEWLBGGsIQ'
+const getToken = (): string | null => {
+  return sessionStorage.getItem('token');
+};
 
 const api = axios.create({
-    baseURL: 'http://localhost:3000',
-    headers:{
-        'Authorization': `${token}`
-    }
+  baseURL: 'https://aquipodcastbackend-production.up.railway.app'
 });
+
+// Interceptar cada solicitação antes de ser enviada
+api.interceptors.request.use(config => {
+  const token = getToken();
+  if (token) {
+      // Adicionar o token ao cabeçalho Authorization se estiver disponível
+      config.headers.Authorization = token;
+  }
+  return config;
+}, error => {
+  return Promise.reject(error);
+});
+
+export const baseURL = api.defaults.baseURL;
 
 export default api;

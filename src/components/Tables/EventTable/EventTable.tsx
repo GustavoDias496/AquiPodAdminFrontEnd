@@ -5,16 +5,16 @@ import { AiFillDelete, AiFillEdit } from "react-icons/ai";
 import toast, { Toaster } from "react-hot-toast";
 import { Link } from "react-router-dom";
 
-export type IUser = {
+export type IEvent = {
   id: number;
   name: string;
-  email: string;
+  active: string;
 };
 
-export function UserTable() {
-  const [users, setUsers] = useState<IUser[]>([]);
-  const sucessNotify = () => toast("Usuário excluido com sucesso!");
-  const errorNotify = () => toast("Erro: Usuário vinculado a outro dado!");
+export function EventTable() {
+  const [events, setEvents] = useState<IEvent[]>([]);
+  const sucessNotify = () => toast("Evento excluido com sucesso!");
+  const errorNotify = () => toast("Erro: Evento vinculado a outro dado!");
 
   useEffect(() => {
     fetchData();
@@ -22,9 +22,9 @@ export function UserTable() {
 
   const fetchData = () => {
     api
-      .get("/users")
+      .get("/event")
       .then((response) => {
-        setUsers(response.data);
+       setEvents(response.data);
       })
       .catch((error) => {
         console.log(error);
@@ -33,7 +33,7 @@ export function UserTable() {
 
   const deleteData = (id: number) => {
     api
-      .delete(`/users/${id}`)
+      .delete(`/event/${id}`)
       .then((res) => {
         console.log(res);
         sucessNotify();
@@ -46,17 +46,17 @@ export function UserTable() {
   };
 
   const renderContent = () => {
-    if (users.length > 0) {
-      return users.map((user, index) => (
+    if (events.length > 0) {
+      return events.map((event, index) => (
         <tr key={index}>
-          <th className={styles.th}>{user.name}</th>
-          <th className={styles.th}>{user.email}</th>
+          <th className={styles.th}>{event.name}</th>
+          <th className={styles.th}>{event.active}</th>
           <th className={styles.th}>
-            <Link to={`/edituser/${user.id}`}>
+            <Link to={`/editevent/${event.id}`}>
             <AiFillEdit color="blue" />
             </Link>
           </th>
-          <th className={styles.th} onClick={() => deleteData(user.id)}>
+          <th className={styles.th} onClick={() => deleteData(event.id)}>
             <AiFillDelete color="red" className={styles.deleteIcon} />
           </th>
         </tr>
@@ -77,7 +77,7 @@ export function UserTable() {
       <table className={styles.table}>
         <thead>
           <th className={styles.th}>Nome</th>
-          <th className={styles.th}>Email</th>
+          <th className={styles.th}>Ativo</th>
           <th className={styles.th}>Editar</th>
           <th className={styles.th}>Excluir</th>
         </thead>

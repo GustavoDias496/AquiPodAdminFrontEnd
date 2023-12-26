@@ -1,4 +1,4 @@
-import styles from '../../../global/styles/form.module.css';
+import styles from "../../../global/styles/form.module.css";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -8,7 +8,10 @@ import { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-
+import { useParams } from "react-router-dom";
+import { FaCloudDownloadAlt } from "react-icons/fa";
+import { baseURL } from "../../../services/api";
+import { Editor } from "@tinymce/tinymce-react";
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
   clipPath: "inset(50%)",
@@ -23,19 +26,20 @@ const VisuallyHiddenInput = styled("input")({
 
 const schema = yup
   .object({
-    finalistName: yup.string().required("O nome é obrigatório!"),
-    categoryId: yup.string().required("A categoria é obrigatória!"),
+    supportersName: yup.string().required("O nome é obrigatório!"),
   })
   .required();
 
 type FormData = yup.InferType<typeof schema>;
 
-type ICategory = {
+type ISupporters = {
   id: number;
   name: string;
+  description: string;
+  image: string;
 };
 
-export function FinalistForm() {
+export function SupportersEditForm() {
   const {
     register,
     handleSubmit: onSubmit,
@@ -51,8 +55,11 @@ export function FinalistForm() {
   const [isSubmit, setIsSubmit] = useState(false);
   const [image, setImage] = useState<File | undefined>(undefined);
   const [isImageUploaded, setIsImageUploaded] = useState(false);
-  const [categorys, setCategorys] = useState<ICategory[]>([]);
-
+  const { id } = useParams<{ id: string }>();
+  const [data, setData] = useState<ISupporters>();
+  console.log(data);
+  const [editorContent, setEditorContent] = useState("");
+  const supportersId = id ? parseInt(id, 10) : undefined;
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -63,9 +70,14 @@ export function FinalistForm() {
 
   useEffect(() => {
     api
-      .get("/categorys")
+      .get(`supporters/${supportersId}`)
       .then((res) => {
-        setCategorys(res.data);
+        setData(res.data);
+        if (res.data) {
+          reset({
+            supportersName: res.data.name,
+          });
+        }
       })
       .catch((error) => {
         console.log(error);
@@ -74,21 +86,18 @@ export function FinalistForm() {
 
   const handleSubmit = () => {
     setIsSubmit(true);
-    const finalistName = getValues("finalistName");
-    const categoria = getValues("categoryId");
-
+    const supportersName = getValues("supportersName");
+    const supportersDescription = editorContent;
     api
-      .post(
-        "/finalist",
+      .put(
+        `/supporters/${supportersId}`,
         {
-          name: finalistName,
-          categoryId: parseInt(categoria),
+          name: supportersName,
+          description: supportersDescription,
           document: image,
         },
         {
           headers: {
-            Authorization:
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzAyMzQ2Njc3fQ.JVmkjlE70QyFAZ10NgPV586yCtHsJBSDFfEWLBGGsIQ",
             "Content-Type": "multipart/form-data",
           },
         }
@@ -97,7 +106,9 @@ export function FinalistForm() {
         setIsSubmit(true);
         successNotify();
         setIsImageUploaded(false);
-        reset();
+        reset({
+          supportersName: supportersName,
+        });
       })
       .catch((error: any) => {
         errorNotify();
@@ -108,6 +119,7 @@ export function FinalistForm() {
       });
   };
 
+  
   return (
     <form
       onSubmit={onSubmit(handleSubmit)}
@@ -117,32 +129,61 @@ export function FinalistForm() {
       <div className={styles.inputContainer}>
         <label className={styles.label}>Nome:</label>
         <input
-          {...register("finalistName")}
+          {...register("supportersName")}
           type="text"
           className={styles.input}
         />
-        {errors.finalistName && (
-          <p className={styles.inputError}>{errors.finalistName.message}</p>
+        {errors.supportersName && (
+          <p className={styles.inputError}>{errors.supportersName.message}</p>
         )}
       </div>
 
       <div className={styles.inputContainer}>
-        <label className={styles.label}>Categoria:</label>
-        <select className={styles.input} {...register("categoryId")}>
-          <option className={styles.input}>Selecione uma categoria</option>
-          {categorys.map((category) => (
-            <option
-              className={styles.option}
-              key={category.id}
-              value={category.id}
-            >
-              {category.name}
-            </option>
-          ))}
-        </select>
-        {errors.categoryId && (
-          <p className={styles.inputError}>{errors.categoryId.message}</p>
+        <label className={styles.label}>Descrição:</label>
+        <Editor
+          apiKey="epc699ptf3hs9nf9q1hph1m0vdtbr2h7ruq6icz96isofrqp"
+          init={{
+            height: 400,
+            width: 800,
+            plugins:
+              "ai tinycomments mentions anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed permanentpen footnotes advtemplate advtable advcode editimage tableofcontents mergetags powerpaste tinymcespellchecker autocorrect a11ychecker typography inlinecss",
+            toolbar:
+              "undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat",
+            tinycomments_mode: "embedded",
+            tinycomments_author: "Author name",
+            mergetags_list: [
+              { value: "First.Name", title: "First Name" },
+              { value: "Email", title: "Email" },
+            ],
+            ai_request: (_request: any, respondWith: any) =>
+              respondWith.string(() =>
+                Promise.reject("See docs to implement AI Assistant")
+              ),
+          }}
+          initialValue={data?.description}
+          value={editorContent}
+          onEditorChange={(content) => setEditorContent(content)}
+        />
+      </div>
+
+      <div className={styles.inputContainerImage}>
+        {data?.image && (
+          <img
+            src={`${baseURL}/${data.image}`}
+            alt="Descrição da imagem"
+            className={styles.imagePreview}
+            width="50px"
+            height="50px"
+          />
         )}
+        <a
+          href={`${baseURL}/${data?.image}`}
+          download={data?.image}
+          className={styles.downloadLink}
+          target="_blank"
+        >
+          <FaCloudDownloadAlt color="#000" className={styles.downloadIcon} />
+        </a>
       </div>
 
       <div className={styles.inputContainer}>

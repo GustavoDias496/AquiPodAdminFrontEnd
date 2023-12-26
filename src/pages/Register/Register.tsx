@@ -11,6 +11,8 @@ import { ServiceForm } from '../../components/RegisterForms/ServiceForm/ServiceF
 import { FinalistForm } from '../../components/RegisterForms/FinalistForm/FinalistForm';
 import { MdMiscellaneousServices } from "react-icons/md";
 import { FaPerson } from "react-icons/fa6";
+import { EventForm } from '../../components/RegisterForms/EventForm/EventForm';
+import { SupportersForm } from '../../components/RegisterForms/SupportersForm/SupportersForm';
 
 const itens = [
   {
@@ -37,6 +39,17 @@ const itens = [
     title: "Finalistas",
     component: <FinalistForm />,
     icon: <FaPerson />,
+  },
+  {
+    title: "Eventos",
+    component: <EventForm />,
+    icon: <FaPerson />,
+  },
+  {
+    title: "Apoiadores",
+    component: <SupportersForm />,
+    icon: <FaPerson />,
+    height: "90vh"
   },
 ];
 
