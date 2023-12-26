@@ -7,9 +7,6 @@ export default defineConfig({
   optimizeDeps:{
     include: ['react-google-charts'],
   },
-  build: {
-    commonjsOptions: {
-      include: [],
-    }
-  }
-})
+  build: {}
+});
+
