@@ -5,7 +5,7 @@ const getToken = (): string | null => {
 };
 
 const api = axios.create({
-  baseURL: 'https://aquipodcastbackend-production.up.railway.app'
+  baseURL: 'http://localhost:3000/'
 });
 
 // Interceptar cada solicitação antes de ser enviada

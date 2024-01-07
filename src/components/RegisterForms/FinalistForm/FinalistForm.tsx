@@ -1,4 +1,4 @@
-import styles from '../../../global/styles/form.module.css';
+import styles from "../../../global/styles/form.module.css";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -88,7 +88,7 @@ export function FinalistForm() {
         {
           headers: {
             Authorization:
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzAyMzQ2Njc3fQ.JVmkjlE70QyFAZ10NgPV586yCtHsJBSDFfEWLBGGsIQ",
+              "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzAyMzQ2Njc3fQ.JVmkjlE70QyFAZ10NgPV586yCtHsJBSDFfEWLBGGsIQ",
             "Content-Type": "multipart/form-data",
           },
         }
@@ -130,15 +130,19 @@ export function FinalistForm() {
         <label className={styles.label}>Categoria:</label>
         <select className={styles.input} {...register("categoryId")}>
           <option className={styles.input}>Selecione uma categoria</option>
-          {categorys.map((category) => (
-            <option
-              className={styles.option}
-              key={category.id}
-              value={category.id}
-            >
-              {category.name}
-            </option>
-          ))}
+          {Array.isArray(categorys) ? (
+            categorys.map((category) => (
+              <option
+                className={styles.option}
+                key={category.id}
+                value={category.id}
+              >
+                {category.name}
+              </option>
+            ))
+          ) : (
+            <option className={styles.option}>Carregando...</option>
+          )}
         </select>
         {errors.categoryId && (
           <p className={styles.inputError}>{errors.categoryId.message}</p>

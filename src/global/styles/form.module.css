@@ -7,6 +7,10 @@
     height: 55vh;
 }
 
+.supportersFormContainer {
+    height: auto;
+}
+
 .inputContainer {
     display: flex;
     flex-direction: column;
@@ -40,6 +44,15 @@
 }
 
 .button:hover {
+    background-color: var(--button-form-hover);
+}
+
+
+.buttonSupporters {
+   margin-bottom: 30px;
+}
+
+.buttonSupporters:hover {
     background-color: var(--button-form-hover);
 }
 

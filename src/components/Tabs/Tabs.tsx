@@ -64,7 +64,7 @@ export default function Tabs({ itens }: tabsItens) {
   useEffect(() => {
       openTabClick(0);
     }
-  );
+  ),[];
 
   return (
     <div className={styles.main}>
@@ -81,7 +81,7 @@ export default function Tabs({ itens }: tabsItens) {
       ))}
 
       </div>
-      <div key={activeTab} className={styles.conteiner} style={{ height: itens[activeTab].height }}>
+      <div key={activeTab} className={styles.conteiner} style={{ height: itens[activeTab].height, overflowY: itens[activeTab].title === "Apoiadores" ? "auto" : "hidden" }}>
         {itens[activeTab].component}
       </div>
     </div>

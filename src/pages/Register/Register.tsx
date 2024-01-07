@@ -49,7 +49,6 @@ const itens = [
     title: "Apoiadores",
     component: <SupportersForm />,
     icon: <FaPerson />,
-    height: "90vh"
   },
 ];
 

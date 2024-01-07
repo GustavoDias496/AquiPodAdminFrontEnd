@@ -11,7 +11,7 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
-  clipPath: "inset(50%)",
+  clipPath: "inset(50%)", 
   height: 1,
   overflow: "hidden",
   position: "absolute",
@@ -25,6 +25,7 @@ const schema = yup
   .object({
     serviceName: yup.string().required("O nome é obrigatório!"),
     serviceDescription: yup.string().required("A descrição é obrigatória!"),
+    serviceActive: yup.string().required("Obrigatório!"),
   })
   .required();
 
@@ -59,10 +60,12 @@ export function ServiceForm() {
     setIsSubmit(true);
     const serviceName = getValues("serviceName");
     const serviceDescription = getValues("serviceDescription");
+    const serviceActive = getValues("serviceActive");
     console.log({
       name: serviceName,
       description: serviceDescription,
       document: image,
+      type: serviceActive
     });
     api
       .post(
@@ -71,6 +74,7 @@ export function ServiceForm() {
           name: serviceName,
           description: serviceDescription,
           document: image,
+          
         },
         {
           headers: {
@@ -122,6 +126,18 @@ export function ServiceForm() {
           <p className={styles.inputError}>
             {errors.serviceDescription.message}
           </p>
+        )}
+      </div>
+
+      <div className={styles.inputContainer}>
+        <label className={styles.label}>Ativo:</label>
+        <select {...register("serviceActive")} className={styles.input}>
+          <option value={'aquipodcast'}>Aqui PodCast</option>
+          <option value={'aquipodstudio'}>AquiPod Studio</option>
+        </select>
+
+        {errors.serviceActive && (
+          <p className={styles.inputError}>{errors.serviceActive.message}</p>
         )}
       </div>
 

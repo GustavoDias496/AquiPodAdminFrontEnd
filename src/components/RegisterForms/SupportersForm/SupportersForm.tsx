@@ -95,7 +95,7 @@ export function SupportersForm() {
     <form
       onSubmit={onSubmit(handleSubmit)}
       encType="multipart/form-data"
-      className={styles.formContainer}
+      className={`${styles.formContainer} ${styles.supportersFormContainer}`}
     >
       <div className={styles.inputContainer}>
         <label className={styles.label}>Nome:</label>
@@ -156,7 +156,7 @@ export function SupportersForm() {
         </label>
       </div>
 
-      <button className={styles.button}>
+      <button className={`${styles.button} ${styles.buttonSupporters}`}>
         {isSubmit ? (
           <>
             <div className={styles.loader}></div>Enviando...

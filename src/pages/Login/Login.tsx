@@ -7,7 +7,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import api from "../../services/api";
 import { useNavigate } from "react-router-dom";
 
-
 const schema = yup.object({
     userEmail: yup.string().email().required("O email é obrigatório!"),
     userPassword: yup.string().required("A senha é obrigatória!"),
@@ -19,7 +18,6 @@ type FormData = yup.InferType<typeof schema>;
 export function Login() {
   let history = useNavigate();
   const [isSubmit, setIsSubmit] = useState(false);
-
   const { register, handleSubmit: onSubmit, getValues, reset, formState: { errors } } = useForm<FormData>({
     resolver: yupResolver(schema) 
 });
@@ -37,8 +35,6 @@ const handleSubmit = () => {
     }).then((res) => {
         setIsSubmit(true)
         reset();
-
-        // Armazenar o token no sessionStorage
         sessionStorage.setItem('token', res.data.token);
         sessionStorage.setItem('auth', res.data.auth);
         history('/home')
